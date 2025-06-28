@@ -1,1 +1,0 @@
-# crank-slider-arbedk6
