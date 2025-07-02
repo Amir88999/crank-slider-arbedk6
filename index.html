@@ -1,62 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Crank Slider Karakuri AR</title>
   <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
   <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-
-    #trivia-box {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      right: 10px;
-      max-width: 360px;
-      background-color: rgba(0, 0, 0, 0.55);
-      color: white;
-      font-size: 13px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      z-index: 2;
-      line-height: 1.4em;
-      pointer-events: none;
-    }
-
-    #toggleAnimBtn {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background-color: rgba(255,255,255,0.85);
-      color: black;
-      font-weight: bold;
-    }
-  </style>
 </head>
 
-<body>
-  <!-- Trivia overlay -->
-  <div id="trivia-box">
-    <strong>Crank Slider Karakuri:</strong><br>
-    This mechanism converts rotary motion into linear motion using a crank, connecting rod, and slider. It's famously used in engine pistons.<br><br>
-    In Karakuri, this setup enables precise push-and-pull actions without motors—perfect for lean, repeatable movements.
-  </div>
-
-  <!-- AR scene -->
+<body style="margin: 0; overflow: hidden;">
   <a-scene
     vr-mode-ui="enabled: false;"
     loading-screen="enabled: false;"
@@ -69,23 +21,29 @@
       <a-asset-item id="animated-asset" src="assets/asset.glb"></a-asset-item>
     </a-assets>
 
-    <!-- Lighting -->
-    <a-entity light="type: ambient; intensity: 0.6"></a-entity>
+    <!-- Lighting with Shadows -->
     <a-entity 
-      light="type: directional; color: #ffffff; intensity: 0.8; castShadow: true"
-      position="0 3 2"
-      rotation="-45 0 0"
+      light="type: ambient; intensity: 0.6"
     ></a-entity>
 
-    <!-- Shadow-catching plane -->
     <a-entity 
-      geometry="primitive: plane; width: 1; height: 1;"
+      light="type: directional; color: #ffffff; intensity: 0.85; castShadow: true"
+      position="0 3 2"
+      rotation="-60 45 0"
+      shadow-camera-near="0.1"
+      shadow-camera-far="10"
+      shadow-map-width="2048"
+      shadow-map-height="2048"
+    ></a-entity>
+
+    <!-- Shadow receiving plane -->
+    <a-entity 
+      geometry="primitive: plane; width: 1.5; height: 1.5;"
       rotation="-90 0 0"
-      material="color: #000; opacity: 0"
+      material="color: #ffffff; opacity: 0.001; transparent: true"
       shadow="receive: true"
     ></a-entity>
 
-    <!-- Marker and model -->
     <a-marker
       id="animated-marker"
       type="pattern"
@@ -99,7 +57,7 @@
         id="model"
         gltf-model="#animated-asset"
         class="clickable"
-        scale="0.01269247951695119 0.01269247951695119 0.01269247951695119"
+        scale="0.012692 0.012692 0.012692"
         animation-mixer="loop: repeat"
         gesture-handler
         shadow="cast: true"
@@ -110,7 +68,22 @@
   </a-scene>
 
   <!-- Pause Button -->
-  <button id="toggleAnimBtn">Pause Animation</button>
+  <button id="toggleAnimBtn" style="
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: rgba(255,255,255,0.8);
+    color: black;
+    font-weight: bold;
+  ">
+    Pause Animation
+  </button>
 
   <script>
     const toggleBtn = document.getElementById("toggleAnimBtn");
@@ -119,8 +92,13 @@
     let isPaused = false;
     toggleBtn.addEventListener("click", () => {
       if (!model) return;
-      model.setAttribute("animation-mixer", `timeScale: ${isPaused ? 1 : 0}`);
-      toggleBtn.textContent = isPaused ? "Pause Animation" : "Play Animation";
+      if (isPaused) {
+        model.setAttribute("animation-mixer", "timeScale: 1");
+        toggleBtn.textContent = "Pause Animation";
+      } else {
+        model.setAttribute("animation-mixer", "timeScale: 0");
+        toggleBtn.textContent = "Play Animation";
+      }
       isPaused = !isPaused;
     });
   </script>
