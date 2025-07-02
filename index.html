@@ -84,4 +84,44 @@
       id="animated-marker"
       type="pattern"
       preset="custom"
-      url="asset
+      url="assets/marker.patt"
+      raycaster="objects: .clickable"
+      emitevents="true"
+      cursor="fuse: false; rayOrigin: mouse;"
+    >
+      <a-entity
+        id="model"
+        gltf-model="#animated-asset"
+        class="clickable"
+        scale="0.012692 0.012692 0.012692"
+        animation-mixer="loop: repeat"
+        gesture-handler
+        shadow="cast: true"
+      ></a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- Pause Button -->
+  <button id="toggleAnimBtn">Pause Animation</button>
+
+  <script>
+    const toggleBtn = document.getElementById("toggleAnimBtn");
+    const model = document.querySelector("#model");
+
+    let isPaused = false;
+    toggleBtn.addEventListener("click", () => {
+      if (!model) return;
+      if (isPaused) {
+        model.setAttribute("animation-mixer", "timeScale: 1");
+        toggleBtn.textContent = "Pause Animation";
+      } else {
+        model.setAttribute("animation-mixer", "timeScale: 0");
+        toggleBtn.textContent = "Play Animation";
+      }
+      isPaused = !isPaused;
+    });
+  </script>
+</body>
+</html>
