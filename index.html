@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Crank Slider Karakuri AR</title>
+
+  <!-- A-Frame + AR.js + Extras -->
   <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
@@ -58,38 +60,44 @@
 
   <!-- AR scene -->
   <a-scene
+    embedded
     vr-mode-ui="enabled: false;"
     loading-screen="enabled: false;"
-    renderer="logarithmicDepthBuffer: true; antialias: true; shadowMapEnabled: true;"
+    shadow="type: pcfsoft"
+    renderer="logarithmicDepthBuffer: true; antialias: true; shadowMapEnabled: true; shadowMapType: PCFSoftShadowMap;"
     arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-    embedded
     gesture-detector
   >
+    <!-- Assets -->
     <a-assets>
       <a-asset-item id="animated-asset" src="assets/asset.glb"></a-asset-item>
     </a-assets>
 
-    <!-- Lighting -->
+    <!-- Lights -->
     <a-entity light="type: ambient; intensity: 0.6"></a-entity>
-    <a-entity 
+    <a-entity
       light="type: directional; color: #ffffff; intensity: 0.85; castShadow: true"
       position="1.5 3 2"
       rotation="-60 30 0"
       shadow-camera-near="0.1"
       shadow-camera-far="10"
-      shadow-map-width="2048"
-      shadow-map-height="2048"
+      shadow-camera-left="-2"
+      shadow-camera-right="2"
+      shadow-camera-top="2"
+      shadow-camera-bottom="-2"
+      shadow-map-width="4096"
+      shadow-map-height="4096"
     ></a-entity>
 
-    <!-- Shadow-catching plane -->
-    <a-entity 
+    <!-- Shadow catcher plane -->
+    <a-entity
       geometry="primitive: plane; width: 1.2; height: 1.2;"
       rotation="-90 0 0"
-      material="color: #000; opacity: 0.001; transparent: true"
+      material="color: #ccc; opacity: 0.001; transparent: true"
       shadow="receive: true"
     ></a-entity>
 
-    <!-- Marker and model -->
+    <!-- Marker -->
     <a-marker
       id="animated-marker"
       type="pattern"
@@ -103,7 +111,7 @@
         id="model"
         gltf-model="#animated-asset"
         class="clickable"
-        scale="0.01269247951695119 0.01269247951695119 0.01269247951695119"
+        scale="0.012692 0.012692 0.012692"
         animation-mixer="loop: repeat"
         gesture-handler
         shadow="cast: true"
@@ -113,7 +121,7 @@
     <a-entity camera></a-entity>
   </a-scene>
 
-  <!-- Pause Button -->
+  <!-- Toggle Animation -->
   <button id="toggleAnimBtn">Pause Animation</button>
 
   <script>
