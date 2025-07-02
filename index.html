@@ -33,11 +33,10 @@
       pointer-events: none;
     }
 
-    #toggleAnimBtn {
+    #toggleAnimBtn,
+    #toggleShadowBtn {
       position: fixed;
       bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
       z-index: 2;
       padding: 10px 20px;
       font-size: 16px;
@@ -46,6 +45,16 @@
       background-color: rgba(255,255,255,0.85);
       color: black;
       font-weight: bold;
+    }
+
+    #toggleAnimBtn {
+      left: 50%;
+      transform: translateX(-110%);
+    }
+
+    #toggleShadowBtn {
+      left: 50%;
+      transform: translateX(10%);
     }
   </style>
 </head>
@@ -76,6 +85,7 @@
     <!-- Lights -->
     <a-entity light="type: ambient; intensity: 0.6"></a-entity>
     <a-entity
+      id="main-light"
       light="type: directional; color: #ffffff; intensity: 0.85; castShadow: true"
       position="1.5 3 2"
       rotation="-60 30 0"
@@ -89,15 +99,16 @@
       shadow-map-height="4096"
     ></a-entity>
 
-    <!-- Shadow catcher plane -->
+    <!-- Shadow catcher -->
     <a-entity
+      id="shadow-plane"
       geometry="primitive: plane; width: 1.2; height: 1.2;"
       rotation="-90 0 0"
       material="color: #ccc; opacity: 0.001; transparent: true"
       shadow="receive: true"
     ></a-entity>
 
-    <!-- Marker -->
+    <!-- Marker and model -->
     <a-marker
       id="animated-marker"
       type="pattern"
@@ -121,19 +132,39 @@
     <a-entity camera></a-entity>
   </a-scene>
 
-  <!-- Toggle Animation -->
+  <!-- Control buttons -->
   <button id="toggleAnimBtn">Pause Animation</button>
+  <button id="toggleShadowBtn">Disable Shadow</button>
 
+  <!-- Interactivity Script -->
   <script>
-    const toggleBtn = document.getElementById("toggleAnimBtn");
+    const toggleAnimBtn = document.getElementById("toggleAnimBtn");
+    const toggleShadowBtn = document.getElementById("toggleShadowBtn");
+
     const model = document.querySelector("#model");
+    const light = document.querySelector("#main-light");
+    const plane = document.querySelector("#shadow-plane");
 
     let isPaused = false;
-    toggleBtn.addEventListener("click", () => {
+    let shadowEnabled = true;
+
+    // Animation toggle
+    toggleAnimBtn.addEventListener("click", () => {
       if (!model) return;
       model.setAttribute("animation-mixer", `timeScale: ${isPaused ? 1 : 0}`);
-      toggleBtn.textContent = isPaused ? "Pause Animation" : "Play Animation";
+      toggleAnimBtn.textContent = isPaused ? "Pause Animation" : "Play Animation";
       isPaused = !isPaused;
+    });
+
+    // Shadow toggle
+    toggleShadowBtn.addEventListener("click", () => {
+      shadowEnabled = !shadowEnabled;
+
+      model.setAttribute("shadow", `cast: ${shadowEnabled}`);
+      plane.setAttribute("shadow", `receive: ${shadowEnabled}`);
+      light.setAttribute("light", "castShadow", shadowEnabled);
+
+      toggleShadowBtn.textContent = shadowEnabled ? "Disable Shadow" : "Enable Shadow";
     });
   </script>
 </body>
